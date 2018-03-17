@@ -16,8 +16,7 @@ public class Dictee {
     }
 
     private Tuple zoekIndexInInvoer(int in, List<Tuple> tuples) {
-        List<Tuple> laatstVoorkomendeTuple = tuples.stream().filter(t -> t.isChar(in)).collect(Collectors.toList());
-        int index = !laatstVoorkomendeTuple.isEmpty() ? laatstVoorkomendeTuple.get(laatstVoorkomendeTuple.size() - 1).getIndex() + 1 : 0;
+        int index = getLaatstVoorkomendeTupleIndexMetChar(in, tuples);
 
         int charTeZoeken = Character.isUpperCase(in) ? Character.toLowerCase(in) : Character.toUpperCase(in);
         int indexFromIndexHf = invoer.indexOf(charTeZoeken, index);
@@ -34,6 +33,11 @@ public class Dictee {
         return new Tuple(in, indexFromIndexGewoon);
     }
 
+    private int getLaatstVoorkomendeTupleIndexMetChar(int in, List<Tuple> tuples) {
+        List<Tuple> laatstVoorkomendeTuple = tuples.stream().filter(t -> t.isChar(in)).collect(Collectors.toList());
+        return !laatstVoorkomendeTuple.isEmpty() ? laatstVoorkomendeTuple.get(laatstVoorkomendeTuple.size() - 1).getIndex() + 1 : 0;
+    }
+
     public int verbeter() {
         List<Tuple> tuples = berekenTupleLijst();
         int score = 0;
@@ -46,9 +50,7 @@ public class Dictee {
 
             if(curr.komtNietVoor()) {
                 score += 2;
-            } else if(curr.komtNietVoor() && next.komtNietVoor()) {
-                score += 2 * 2;
-            } else if(next.getIndex() - curr.getIndex() > 1) {
+            } else if(curr.sluitNietMooiAanMet(next)) {
                 score += 2;
             }
 
