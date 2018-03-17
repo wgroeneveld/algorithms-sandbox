@@ -19,6 +19,17 @@ public class DicteeTests {
         assertEquals(expected, dictee.verbeter());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "sup dikke kerels|wup dikke kerel|4",
+            "sup dikke kerels|wup dikke kerels|2" })
+    public void combinatieGeval_zonderHoofdletters(String input) {
+        Dictee dictee = createDictee(input);
+        int expected = getExpected(input);
+
+        assertEquals(expected, dictee.verbeter());
+    }
+
     @Test
     public void uitgebreidGeval() {
         Dictee dictee = new Dictee("mogelike drangken zijn water cola fruitsap",
