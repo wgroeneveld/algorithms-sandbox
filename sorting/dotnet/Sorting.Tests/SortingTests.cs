@@ -7,33 +7,33 @@ namespace Sorting.Tests
     public class SortingTests
     {
         [TestMethod]
-        public void HeapSorting_MergeSortedLists_EachListHasDifferentAmountOfNumbers()
+        public void MergeSorting_MergeSortedLists_EachListHasDifferentAmountOfNumbers()
         {
-            var sort = new HeapSort();
+            var sort = new MergeSort();
             var result = sort.MergeSortedLists(new List<int> { 3 }, new List<int> { 2, 4 });
 
             CollectionAssert.AreEqual(new List<int> { 2, 3, 4 }, result);
         }
 
         [TestMethod]
-        public void HeapSorting_MergeSortedLists_EachListHasSameAmountOfNumbers()
+        public void MergeSorting_MergeSortedLists_EachListHasSameAmountOfNumbers()
         {
-            var sort = new HeapSort();
+            var sort = new MergeSort();
             var result = sort.MergeSortedLists(new List<int> { 1, 3 }, new List<int> { 2, 4 });
 
             CollectionAssert.AreEqual(new List<int> { 1, 2, 3, 4 }, result);
         }
 
         [TestMethod]
-        public void HeapSorting_SimpleListDividesNeatlyIntoTwo()
+        public void MergeSorting_SimpleListDividesNeatlyIntoTwo()
         {
-            ExecuteTestWithSortMethod(new HeapSort(), new List<int> { 4, 3, 2, 1 }, new List<int> { 1, 2, 3, 4 });
+            ExecuteTestWithSortMethod(new MergeSort(), new List<int> { 4, 3, 2, 1 }, new List<int> { 1, 2, 3, 4 });
         }
 
         [TestMethod]
-        public void HeapSorting_SimpleListUnevenNumbers()
+        public void MergeSorting_SimpleListUnevenNumbers()
         {
-            ExecuteTestWithSortMethod(new HeapSort(), new List<int> { 5, 7, 6, 4, 3, 2, 1 }, new List<int> { 1, 2, 3, 4, 5, 6, 7 });
+            ExecuteTestWithSortMethod(new MergeSort(), new List<int> { 5, 7, 6, 4, 3, 2, 1 }, new List<int> { 1, 2, 3, 4, 5, 6, 7 });
         }
 
         private void ExecuteTestWithSortMethod(ISortable sortable, List<int> toSort, List<int> expected)
