@@ -9,6 +9,11 @@ import java.util.List;
 public class SortTest {
 
     @Test
+    public void bucketSort() {
+        simpleTestCaseFor(new BucketSort());
+    }
+
+    @Test
     public void quickSort() {
         simpleTestCaseFor(new QuickSort());
     }
