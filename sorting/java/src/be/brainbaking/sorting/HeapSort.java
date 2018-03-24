@@ -1,14 +1,14 @@
 package be.brainbaking.sorting;
 
+import be.brainbaking.lists.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class HeapSort implements Sortable {
+import static be.brainbaking.lists.Lists.asString;
 
-    private String asString(List<Integer> list) {
-        return list.stream().map(i -> i.toString()).collect(Collectors.joining(", "));
-    }
+public class HeapSort implements Sortable {
 
     /**
      * heap-size[A] <- length[A]
@@ -53,15 +53,9 @@ public class HeapSort implements Sortable {
         }
 
         if(largesti != oneBasedIndex) {
-            swap(list, oneBasedIndex, largesti);
+            Lists.swap(list, oneBasedIndex, largesti);
             maxHeapify(list, largesti);
         }
-    }
-
-    private void swap(List<Integer> list, int oneBasedA, int oneBasedB) {
-        int temp = list.get(oneBasedA - 1);
-        list.set(oneBasedA - 1, list.get(oneBasedB - 1));
-        list.set(oneBasedB - 1, temp);
     }
 
     /**
@@ -79,6 +73,7 @@ public class HeapSort implements Sortable {
         for(int i = heap.size(); i >= 1; i--) {
             // in plaats van te swappen met 1, i pitsen we het hoofd van de tree er af
             // ik wil niet heap-size manipuleren en doorgeven
+            // !! Vergeet niet dat dit O(n!) tijd toevoegt aan ons algoritme
             sorted.add(0, heap.get(0));
             heap.remove(0);
             maxHeapify(heap, 1);
