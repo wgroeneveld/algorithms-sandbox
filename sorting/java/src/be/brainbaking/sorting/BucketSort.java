@@ -1,5 +1,7 @@
 package be.brainbaking.sorting;
 
+import be.brainbaking.lists.SomeLinkedList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,14 +27,14 @@ public class BucketSort implements Sortable {
     @Override
     public List<Integer> sort(List<Integer> list) {
         int n = list.size();
-        List<List<Integer>> buckets = initializeBuckets(n);
+        List<SomeLinkedList<Integer>> buckets = initializeBuckets(n);
 
         for(int i = 1; i <= n; i++) {
             int x = list.get(i - 1);
             int bucketIndex = calculateBucketIndex(n, x);
 
             if(buckets.size() <= bucketIndex) {
-                buckets.add(bucketIndex, Arrays.asList(x));
+                buckets.add(bucketIndex, new SomeLinkedList<>(x));
             } else {
                 buckets.get(bucketIndex).add(x);
             }
@@ -41,20 +43,22 @@ public class BucketSort implements Sortable {
         return mergeSortedBuckets(buckets);
     }
 
-    private List<Integer> mergeSortedBuckets(List<List<Integer>> buckets) {
+    private List<Integer> mergeSortedBuckets(List<SomeLinkedList<Integer>> buckets) {
         List<Integer> sorted = new ArrayList<>();
-        for (List<Integer> bucket : buckets) {
-            sorted.addAll(insertionSorter.sort(bucket));
+        for (SomeLinkedList<Integer> bucket : buckets) {
+            // crap... I'm too lazy to rewrite insertion sort to use the linkedlist or to implement List<T>. Convert it!
+
+            sorted.addAll(insertionSorter.sort(bucket.toList()));
         }
 
         return sorted;
     }
 
-    private List<List<Integer>> initializeBuckets(int n) {
-        List<List<Integer>> buckets = new ArrayList<>();
+    private List<SomeLinkedList<Integer>> initializeBuckets(int n) {
+        List<SomeLinkedList<Integer>> buckets = new ArrayList<>();
 
         for(int i = 0; i < n; i++) {
-            buckets.add(new ArrayList<>());
+            buckets.add(new SomeLinkedList<>());
         }
 
         return buckets;
