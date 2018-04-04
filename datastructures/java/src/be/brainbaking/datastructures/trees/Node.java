@@ -46,6 +46,27 @@ public class Node {
         keys.add(i, key);
     }
 
+    public String getKey(Node child) {
+        for(int i = 0; i < keys.size(); i++) {
+            if(keys.get(i).compareTo(child.getKeys().get(0)) >= 0) {
+                
+            }
+        }
+    }
+
+    public List<Node> getSiblingsOf(Node child) {
+        List<Node> siblings = new ArrayList<>();
+        int index = children.indexOf(child);
+        if(index < children.size() - 1) {
+            siblings.add(children.get(index + 1));
+        }
+        if(index > 0) {
+            siblings.add(children.get(index - 1));
+        }
+
+        return siblings;
+    }
+
     public void addChild(Node node) {
         addChild(children.size(), node);
     }
@@ -106,6 +127,14 @@ public class Node {
         return keys;
     }
 
+    public Node getLeftChild() {
+        return children.get(0);
+    }
+
+    public Node getRightChild() {
+        return children.get(children.size() - 1);
+    }
+
     public boolean isLeaf() {
         return leaf;
     }
@@ -118,5 +147,9 @@ public class Node {
         root.addChild(splitResult.getNewNode());
 
         return root;
+    }
+
+    public void deleteKey(String key) {
+        keys.remove(key);
     }
 }
