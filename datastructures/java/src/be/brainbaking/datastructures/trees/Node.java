@@ -1,7 +1,10 @@
 package be.brainbaking.datastructures.trees;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Each node has the following fields:
@@ -35,6 +38,12 @@ public class Node {
         this.leaf = leaf;
     }
 
+    /**
+     * Voegt key gesorteerd toe.
+     * Dit heb ik enkel voor bepaalde gevallen nodig, maar gebruik ik hier gegeneraliseerd.
+     * Betekent een performance hit van worst-case O(n[x]) (bvb switchkeys) -> uit context af te leiden waar
+     * @param key
+     */
     public void addKey(String key) {
         int i;
         for(i = 0; i < keys.size(); i++) {
@@ -46,25 +55,48 @@ public class Node {
         keys.add(i, key);
     }
 
-    public String getKey(Node child) {
-        for(int i = 0; i < keys.size(); i++) {
-            if(keys.get(i).compareTo(child.getKeys().get(0)) >= 0) {
-                
-            }
-        }
+    public List<Node> getChildenBetweenKey(String key) {
+        int keyIndex = keys.indexOf(key);
+        return Arrays.asList(children.get(keyIndex), children.get(keyIndex + 1));   // kan volgens specs niet crashen, zie def. BTree props
+    }
+
+    public String getKeyBetweenChildren(Node child1, Node child2) {
+        return keys.get(Math.max(children.indexOf(child1), children.indexOf(child2)) - 1);
+    }
+
+    public String getExtremeKeyComparedTo(String parentKey) {
+        return parentKey.compareTo(keys.get(0)) < 0 ? keys.get(0) : keys.get(keys.size() - 1);
     }
 
     public List<Node> getSiblingsOf(Node child) {
         List<Node> siblings = new ArrayList<>();
         int index = children.indexOf(child);
-        if(index < children.size() - 1) {
-            siblings.add(children.get(index + 1));
-        }
         if(index > 0) {
             siblings.add(children.get(index - 1));
         }
+        if(index < children.size() - 1) {
+            siblings.add(children.get(index + 1));
+        }
 
         return siblings;
+    }
+
+    public void mergeWith(Node node) {
+        if(node.getKeys().get(0).compareTo(getKeys().get(0)) >= 0) {
+            rightSideMergeWith(node);
+        } else {
+            leftSideMergeWith(node);
+        }
+    }
+
+    private void leftSideMergeWith(Node node) {
+        keys = Stream.concat(node.keys.stream(), keys.stream()).collect(Collectors.toList());
+        children = Stream.concat(node.children.stream(), children.stream()).collect(Collectors.toList());
+    }
+
+    private void rightSideMergeWith(Node node) {
+        keys = Stream.concat(keys.stream(), node.keys.stream()).collect(Collectors.toList());
+        children = Stream.concat(children.stream(), node.children.stream()).collect(Collectors.toList());
     }
 
     public void addChild(Node node) {
@@ -85,7 +117,7 @@ public class Node {
         for(int i = 0; i < t - 1; i++) {
             newNode.addKey(keys.get(i + t));
         }
-        // ?? Aantal sleutels en aantal children kan niet gelijk zijn?
+        // n[x] = aantal sleutels = size(c[x]) - 1; er zijn altijd n[x] + 1 kinderen
         if(!isLeaf()) {
             for(int i = 0; i < t; i++) {
                 newNode.children.add(children.get(i + t - 1));
@@ -123,16 +155,16 @@ public class Node {
         return children;
     }
 
+    public String getLastKey() {
+        return keys.get(getNumberOfKeys() - 1);
+    }
+
+    public String getFirstKey() {
+        return keys.get(0);
+    }
+
     public List<String> getKeys() {
         return keys;
-    }
-
-    public Node getLeftChild() {
-        return children.get(0);
-    }
-
-    public Node getRightChild() {
-        return children.get(children.size() - 1);
     }
 
     public boolean isLeaf() {

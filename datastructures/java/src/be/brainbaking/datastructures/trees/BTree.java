@@ -1,5 +1,8 @@
 package be.brainbaking.datastructures.trees;
 
+import java.util.List;
+import java.util.Optional;
+
 public class BTree {
 
     private Node root;
@@ -53,24 +56,78 @@ public class BTree {
         BTreeSearchResult searchResult = search(key);
         if(!searchResult.isFound()) return;
         Node node = searchResult.getNode();
+        Node parent = searchResult.getParent();
 
         if(node.isLeaf() && node.getNumberOfKeys() >= t) {              // case 1
             node.deleteKey(key);
         } else if(node.isLeaf() && node.getNumberOfKeys() == t - 1) {   // case 3
-            if(searchResult.getParent().getSiblingsOf(node).stream().anyMatch(s -> s.getNumberOfKeys() == t)) {
+            List<Node> siblings = parent.getSiblingsOf(node);
+
+            Optional<Node> maybeSibling = getSiblingWithTNumberOfKeys(siblings);
+            if(maybeSibling.isPresent()) {
                 // 3.a
-            } else if(searchResult.getParent().getSiblingsOf(node).stream().allMatch(s -> s.getNumberOfKeys() == t - 1)) {
+                String parentKeyToPushDown = parent.getKeyBetweenChildren(node, maybeSibling.get());
+                String extremeKeyToPushUp = maybeSibling.get().getExtremeKeyComparedTo(parentKeyToPushDown);
+
+                pushKeyDown(node, parent, parentKeyToPushDown);
+                pullKeyUp(parent, maybeSibling, extremeKeyToPushUp);
+
+                node.deleteKey(key);
+            } else if(siblings.stream().allMatch(s -> s.getNumberOfKeys() == t - 1)) {
                 // 3.b
+                Node rightMostSibling = siblings.stream().filter(s -> s.getNumberOfKeys() == t - 1).reduce((one, two) -> two).get();
+
+                node.mergeWith(rightMostSibling);
+                String parentKeyToPushDown = parent.getKeyBetweenChildren(node, rightMostSibling);
+
+                parent.getChildren().remove(rightMostSibling);
+                pushKeyDown(node, parent, parentKeyToPushDown);
+
+                node.deleteKey(key);
             }
         } else if(!node.isLeaf()) {                                     // case 2
-            if(node.getLeftChild().getNumberOfKeys() >= t) {
+            List<Node> children = node.getChildenBetweenKey(key);
+            Node left = children.get(0);
+            Node right = children.get(1);
+
+            if(left.getNumberOfKeys() >= t) {
                 // 2.a
-            } else if(node.getRightChild().getNumberOfKeys() >= t) {
+                switchKeys(node, key, left, left.getLastKey());
+                left.deleteKey(key);
+            } else if(right.getNumberOfKeys() >= t) {
                 // 2.b
+                switchKeys(node, key, right, right.getFirstKey());
+                right.deleteKey(key);
             } else {
                 // 2.c
+                left.mergeWith(right);
+                node.getChildren().remove(right);
+
+                node.deleteKey(key);
             }
         }
+    }
+
+    private void switchKeys(Node node, String key, Node nodeToSwitch, String keyToSwith) {
+        node.getKeys().remove(key);
+        node.addKey(keyToSwith);
+        nodeToSwitch.getKeys().remove(keyToSwith);
+        nodeToSwitch.addKey(key);
+    }
+
+    private void pullKeyUp(Node parent, Optional<Node> maybeSibling, String extremeKeyToPushUp) {
+        maybeSibling.get().getKeys().remove(extremeKeyToPushUp);
+        parent.addKey(extremeKeyToPushUp);
+    }
+
+    private void pushKeyDown(Node node, Node parent, String parentKeyToPushDown) {
+        parent.getKeys().remove(parentKeyToPushDown);
+        node.addKey(parentKeyToPushDown);
+    }
+
+
+    private Optional<Node> getSiblingWithTNumberOfKeys(List<Node> siblings) {
+        return siblings.stream().filter(s -> s.getNumberOfKeys() == t).findFirst();
     }
 
     private void insertNonFull(Node node, String key) {

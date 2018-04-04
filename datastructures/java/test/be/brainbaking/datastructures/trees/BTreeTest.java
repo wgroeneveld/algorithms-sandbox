@@ -36,7 +36,7 @@ public class BTreeTest {
         BTree tree = new BTree(root, 3);
         tree.delete("B");
 
-        assertArrayEquals(Arrays.asList("A", "B").toArray(), tree.getRoot().getChildren().get(0).getKeys().toArray());
+        assertArrayEquals(Arrays.asList("A", "C").toArray(), tree.getRoot().getChildren().get(0).getKeys().toArray());
     }
 
     @Test
