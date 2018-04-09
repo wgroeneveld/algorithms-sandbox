@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static be.brainbaking.lists.Lists.asString;
+import static be.brainbaking.lists.Lists.exchange;
 
 public class QuickSort implements Sortable {
 
@@ -68,11 +69,11 @@ public class QuickSort implements Sortable {
         for(int j = oneBasedStartIndex; j <= oneBasedEndIndex - 1; j++) {
             if(list.get(j - 1) <= x) {
                 i++;
-                Lists.swap(list, i, j);
+                exchange(i).with(j).in(list);
             }
         }
 
-        Lists.swap(list, i + 1, oneBasedEndIndex);
+        exchange(i + 1).with(oneBasedEndIndex).in(list);
         System.out.println("partitioned: " + asString(list));
         return i + 1;
     }

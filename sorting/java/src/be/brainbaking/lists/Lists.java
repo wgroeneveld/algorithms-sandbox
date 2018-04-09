@@ -5,6 +5,10 @@ import java.util.stream.Collectors;
 
 public class Lists {
 
+    public static ListsWrapper exchange(int oneBasedA) {
+        return new ListsWrapper(oneBasedA);
+    }
+
     public static void swap(List<Integer> list, int oneBasedA, int oneBasedB) {
         int temp = list.get(oneBasedA - 1);
         list.set(oneBasedA - 1, list.get(oneBasedB - 1));
